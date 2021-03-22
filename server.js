@@ -288,23 +288,11 @@ io.on("connection", function(socket){
 
   }
 
-  // mở sàn
-  // var time = 0;
-  // cron.schedule("*/60 9 * * *", function() { 
-  //    var z = TaoSoNgauNhien(30000, 70000);
-  // //   setInterval(function () {
-  // //     //var time_start = new Date().getTime();
-  // //     var y = TaoSoNgauNhien(10000, 90000);
-  // //     var x = new Date().getTime();
-  // //     io.sockets.emit('toa-do',{'x':x, 'y':y , 'z':z});
-  // //     //get DB
-      
-  // //   }, 1000); 
-
-
-
+socket.on('force_sign_out',function(data)
+{
+  io.sockets.emit('forced_sign_out',data);
+ });
     
-  // });
 
 });
 
