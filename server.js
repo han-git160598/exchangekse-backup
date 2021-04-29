@@ -19,11 +19,12 @@ const io = require('socket.io')(server, {
 
 
 
-server.listen(process.env.PORT || 5000);
+server.listen(process.env.PORT || 3001);
 
 
-const url = 'http://diendengiadung.com/api/'
-    //const url = 'http://192.168.100.22/kse_trade/api/' // locals
+
+const url ='http://diendengiadung.com/api/';
+//const url = 'http://192.168.100.22/kse_trade/api/' // locals
 const headers = { 'Authorization': 'Basic YWRtaW46cXRjdGVrQDEyMwx==' }
 io.on("connection", function(socket) {
     io.sockets.emit('ket-noi', 'welcome to socket');
@@ -50,8 +51,7 @@ setInterval(function() {
     var xy = { x: x, y: y };
     var coordinate_xy = JSON.stringify(xy);
 
-
-    const data_round1 = { detect: 'trading_block_result', time_now: x };
+    const data_round1 = { detect: 'check_time_block', session_time_break: x };
     axios.post(url, data_round1, {
         headers,
     }).then((res) => {
@@ -64,8 +64,7 @@ setInterval(function() {
 
                 }).catch((error) => {})
             } else {
-
-                if (res.data.data[0].time_close - 15 == x) {
+                if (res.data.data[0].time_block - 15 == x) {
                     var G = JSON.parse(res.data.data[0].coordinate_g);
                     if (G.y <= y) {
                         y = TaoSoNgauNhien(G.y + 1, G.y + 2);
@@ -108,11 +107,13 @@ setInterval(function() {
                     }
                     if (res.data.data[0].status_trade == 'block') {
                         console.log('block');
+                        const data_round = { detect: 'win_lose_trade', time_break: x };
+                        axios.post(url, data_round, {
+                            headers,
+                        }).then((res) => {
 
-
-                        switch (res.data.data[0].result_trade) {
-                            case 'up':
-                                console.log('up');
+                            if (res.data.data[0].result_trade == "up") {
+                                //  ('up');
                                 var a = parseInt(res.data.data[0].time_close);
                                 var b = Math.floor((new Date().getTime()) / 1000);
 
@@ -158,8 +159,7 @@ setInterval(function() {
 
                                     }).catch((error) => {})
                                 }
-                                break;
-                            case 'down':
+                            } else {
                                 console.log('down');
                                 var a = parseInt(res.data.data[0].time_close);
                                 var b = Math.floor((new Date().getTime()) / 1000);
@@ -204,10 +204,9 @@ setInterval(function() {
 
                                     }).catch((error) => {})
                                 }
-                                break;
-                            default:
-                                break;
-                        }
+
+                            }
+                        }).catch((error) => {})
                     }
                 }
             }
