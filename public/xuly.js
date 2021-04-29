@@ -24,6 +24,9 @@ socket.on('erro-serve',function(data)
     console.log(data);
     console.log('erro');
 });
-socket.on('diem-g',function(data){
-console.log(data);
+socket.on('diem-g',function(data)
+{
+    console.log(data);
+ 
 });
+
