@@ -22,7 +22,7 @@ const io = require('socket.io')(server, {
 server.listen(process.env.PORT || 3001);
 
 
-//const url = 'http://diendengiadung.com/api/'
+const url = 'http://diendengiadung.com/api/'
 
 //const url = 'http://192.168.100.22/kse_trade/api/' // locals
 const headers = { 'Authorization': 'Basic YWRtaW46cXRjdGVrQDEyMwx==' }
@@ -107,14 +107,14 @@ setInterval(function() {
                     }
                     if (res.data.data[0].status_trade == 'block') {
                         console.log('block');
+                        const data_round = { detect: 'win_lose_trade', time_break: x };
                         switch (x) {
                             case res.data.data[0].time_block - 9:
-                                const data_round = { detect: 'win_lose_trade', time_break: x };
                                 axios.post(url, data_round, {
                                     headers,
                                 }).then((res) => {
                                     if (res.data.data[0].result_trade == "up") {
-                                        console.log(up);
+                                        console.log('up');
                                         var G = JSON.parse(res.data.data[0].coordinate_g);
                                         y = Math.round((TaoSoNgauNhien(G.y - 0.8, G.y + 0.7)) * 1000) / 1000;
                                         visits = y;
@@ -155,11 +155,12 @@ setInterval(function() {
                                     }
                                 }).catch((error) => {})
                                 break;
-                            case res.data.data[0].time_block - 1:
-                                const data_round = { detect: 'win_lose_trade', time_break: x };
+                            case res.data.data[0].time_block - 2:
                                 axios.post(url, data_round, {
                                     headers,
                                 }).then((res) => {
+                                    console.log('sussecc')
+                                    console.log(res.data)
                                     if (res.data.data[0].result_trade == "up") {
                                         console.log('up');
                                         console.log('finish');
@@ -205,12 +206,11 @@ setInterval(function() {
                                         }).then((res) => {
 
                                         }).catch((error) => {})
-
-
                                     }
                                 }).catch((error) => {})
                                 break;
                             default:
+                                console.log('default')
                                 var G = JSON.parse(res.data.data[0].coordinate_g);
                                 y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
                                 visits = y;
@@ -256,5 +256,4 @@ app.get("/", function(req, res) {
 });
 app.get("/bep", function(req, res) {
     res.render("bep");
-});ep");
 });
