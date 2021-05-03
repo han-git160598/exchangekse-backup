@@ -105,7 +105,7 @@ setInterval(function() {
                             io.emit('diem-g', res.data.data[0].coordinate_g);
                         }).catch((error) => {})
                     }
-                    if (res.data.data[0].status_trade == 'block') {
+                    else {
                         console.log('block');
                         const data_round = { detect: 'win_lose_trade', time_break: x };
                         switch (x) {
