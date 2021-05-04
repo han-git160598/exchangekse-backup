@@ -210,6 +210,9 @@ setInterval(function() {
                                 }
                             }).catch((error) => {})
                             break;
+                        case time_close:
+                            check_time_block();
+                            break;
                         default:
                             console.log('default')
                             y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
