@@ -131,7 +131,7 @@ setInterval(function() {
                     console.log('block');
                     const data_round = { detect: 'win_lose_trade', time_break: x };
                     switch (x) {
-                        case time_block + 1:
+                        case time_block:
                             axios.post(url, data_round, {
                                 headers,
                             }).then((res) => {
