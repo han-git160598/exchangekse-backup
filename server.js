@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const axios = require('axios')
+const axios = require('axios');
 const cors = require("cors");
 const cron = require("node-cron");
 const mysql = require("mysql2");
@@ -41,11 +41,13 @@ function TaoSoNgauNhien(min, max) {
 function random_y(number) {
     return Math.round((number + (Math.random() < 0.5 ? 1 : -1) * Math.random()) * 1000) / 1000;
 }
+
 var visits = 23000;
 var x, y, xy, coordinate_xy;
 var time_open, time_block, time_close;
 var G;
 var flag = 0;
+
 
 function check_time_block() {
     var ctb_interval = setInterval(function() {
@@ -76,6 +78,7 @@ function check_time_block() {
 
     }, 1000);
 }
+
 check_time_block();
 
 setInterval(function() {
@@ -141,7 +144,8 @@ setInterval(function() {
                                     y = TaoSoNgauNhien(G.y - 1, G.y - 2);
                                 }
                                 visits = y;
-                                coordinate_xy = JSON.stringify({ x: x, y: y });
+                                xy = { x: x, y: y };
+                                coordinate_xy = JSON.stringify(xy);
                                 io.emit('coordinates_real', coordinate_xy);
                                 io.emit('block-trading', { notification: 'block_trading' });
                                 const data_add_coordinate = {
@@ -210,11 +214,8 @@ setInterval(function() {
                                 }
                             }).catch((error) => {})
                             break;
-                        case time_close:
-                            check_time_block();
-                            break;
-                        default:
-                            console.log('default')
+                        case time_block + 1 <= x && time_close - 2 >= x:
+                            console.log('red')
                             y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
                             visits = y;
                             coordinate_xy = JSON.stringify({ x: x, y: y });
@@ -232,12 +233,19 @@ setInterval(function() {
 
                             }).catch((error) => {})
                             break;
+                        default:
+                            y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
+                            visits = y;
+                            coordinate_xy = JSON.stringify({ x: x, y: y });
+                            io.emit('coordinates_real', coordinate_xy);
+                            io.emit('block-trading', { notification: 'block_trading' })
+                            check_time_block();
+                            break;
                     }
                 }
             }
         } catch (e) {
             io.emit('erro-serve', e.message);
-
         }
     }
 }, 1000);
