@@ -22,7 +22,7 @@ const io = require('socket.io')(server, {
 server.listen(process.env.PORT || 3001);
 
 
-//const url = 'http://diendengiadung.com/api/'
+const url = 'http://diendengiadung.com/api/'
 
 //const url = 'http://192.168.100.22/kse_trade/api/' // locals
 const headers = { 'Authorization': 'Basic YWRtaW46cXRjdGVrQDEyMwx==' }
@@ -133,8 +133,8 @@ setInterval(function() {
                 } else {
                     console.log('block');
                     const data_round = { detect: 'win_lose_trade', time_break: x };
-                    switch (x) {
-                        case time_block:
+                    switch (true) {
+                        case x == time_block:
                             axios.post(url, data_round, {
                                 headers,
                             }).then((res) => {
@@ -163,7 +163,7 @@ setInterval(function() {
 
                             }).catch((error) => {})
                             break;
-                        case time_close - 1:
+                        case x == time_close - 1:
                             axios.post(url, data_round, {
                                 headers,
                             }).then((res) => {
