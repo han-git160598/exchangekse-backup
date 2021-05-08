@@ -49,6 +49,7 @@ var G;
 var flag = 0;
 var data_add_coordinate;
 var result_trade = 'up';
+var id_period;
 
 
 function check_time_block() {
@@ -59,20 +60,22 @@ function check_time_block() {
             headers,
         }).then((res) => {
             if (res.data.success == "false") {
-                flag=0;
+                flag = 0;
                 const auto_create = { detect: 'auto_creat_session', stock_time_close: x };
                 axios.post(url, auto_create, {
                     headers,
                 }).then((res) => {
 
                 }).catch((error) => {})
-            } else {
 
+            } else {
                 console.log('check_time_block')
                 time_open = parseInt(res.data.data[0].time_open);
                 time_block = parseInt(res.data.data[0].time_block);
                 time_close = parseInt(res.data.data[0].time_close);
                 G = JSON.parse(res.data.data[0].coordinate_g);
+                id_period = parseInt(res.data.data[0].id_period);
+
                 flag = 1;
                 clearInterval(ctb_interval);
             }
@@ -136,6 +139,7 @@ setInterval(function() {
                 } else {
                     console.log('block');
                     const data_round = { detect: 'win_lose_trade', time_break: x };
+                    const data_id_period = { detect: 'add_money_win_socket', id_period: id_period }
                     switch (true) {
                         case x == time_block:
                             if (G.y <= y) {
@@ -165,7 +169,6 @@ setInterval(function() {
                             axios.post(url, data_round, {
                                 headers,
                             }).then((res) => {
-
                                 result_trade = res.data.data[0].result_trade;
                                 if (G.y <= y) {
                                     y = TaoSoNgauNhien(G.y + 1, G.y + 2);
@@ -192,7 +195,61 @@ setInterval(function() {
 
                             }).catch((error) => {})
                             break;
+                        case time_block + 2 <= x && time_close - 2 >= x:
+                            if (time_block + 3 == x || time_block + 6 == x) {
+                                axios.post(url, data_id_period, {
+                                    headers,
+                                }).then((res) => {
+
+                                }).catch((error) => {})
+
+                                console.log('money')
+                                y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
+                                visits = y;
+                                coordinate_xy = JSON.stringify({ x: x, y: y });
+                                io.emit('coordinates_real', coordinate_xy);
+                                io.emit('block-trading', { notification: 'block_trading' });
+                                data_add_coordinate = {
+                                    detect: 'add_coordinate',
+                                    coordinate_xy: coordinate_xy,
+                                    time_present: x,
+                                    session_time_open: x
+                                };
+                                axios.post(url, data_add_coordinate, {
+                                    headers,
+                                }).then((res) => {
+
+                                }).catch((error) => {})
+
+                            } else {
+                                console.log('red')
+                                y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
+                                visits = y;
+                                coordinate_xy = JSON.stringify({ x: x, y: y });
+                                io.emit('coordinates_real', coordinate_xy);
+                                io.emit('block-trading', { notification: 'block_trading' });
+                                data_add_coordinate = {
+                                    detect: 'add_coordinate',
+                                    coordinate_xy: coordinate_xy,
+                                    time_present: x,
+                                    session_time_open: x
+                                };
+                                axios.post(url, data_add_coordinate, {
+                                    headers,
+                                }).then((res) => {
+
+                                }).catch((error) => {})
+
+                            }
+
+                            break;
+
                         case x == time_close - 1:
+                            axios.post(url, data_id_period, {
+                                headers,
+                            }).then((res) => {
+
+                            }).catch((error) => {})
 
                             if (result_trade == 'up') {
                                 console.log('up');
@@ -242,33 +299,16 @@ setInterval(function() {
 
                             check_time_block();
                             break;
-                        case time_block + 2 <= x && time_close - 2 >= x:
-                            console.log('red')
-                            y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
-                            visits = y;
-                            coordinate_xy = JSON.stringify({ x: x, y: y });
-                            io.emit('coordinates_real', coordinate_xy);
-                            io.emit('block-trading', { notification: 'block_trading' });
-                            data_add_coordinate = {
-                                detect: 'add_coordinate',
-                                coordinate_xy: coordinate_xy,
-                                time_present: x,
-                                session_time_open: x
-                            };
-                            axios.post(url, data_add_coordinate, {
-                                headers,
-                            }).then((res) => {
 
-                            }).catch((error) => {})
-                            break;
                         default:
                             console.log('default')
+                            check_time_block();
                             y = Math.round((TaoSoNgauNhien(G.y - 1, G.y + 1)) * 1000) / 1000;
                             visits = y;
                             coordinate_xy = JSON.stringify({ x: x, y: y });
                             io.emit('coordinates_real', coordinate_xy);
                             io.emit('block-trading', { notification: 'block_trading' })
-                            check_time_block();
+
                             break;
                     }
                 }
