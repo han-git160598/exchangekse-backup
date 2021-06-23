@@ -1,5 +1,5 @@
 
-var socket = io('https://exchangekse.herokuapp.com/');
+var socket = io('http://exchangekse.herokuapp.com/');
 
 socket.on('check-socket',function(data)
 {
