@@ -1,5 +1,5 @@
 
-var socket = io('http://nasdaq68.com:3001/');
+var socket = io('https://nasdaq68.com:3001/');
 
 socket.on('check-socket',function(data)
 {
