@@ -1,5 +1,5 @@
 
-var socket = io('http://nasdaq68.com:3001/');
+var socket = io('https://ksedev.herokuapp.com/');
 
 socket.on('check-socket',function(data)
 {
